@@ -4,8 +4,8 @@ const cors = require('cors');
 const session = require('express-session'); // <<<<<<<<<<<<<
 const SessionStore = require('connect-session-knex')(session); // <<<<<< first step
 
-const authRouter = require('../auth/auth-router.js');
-const usersRouter = require('../users/users-router.js');
+const authRouter = require('./auth/auth-router.js');
+const usersRouter = require('./users/users-router.js');
 
 const server = express();
 
@@ -20,7 +20,7 @@ const sessionConfig = {
   resave: false, // avoids creating sessions that avent changed
   saveUninitailized: false, // prevents setting cookies automatically as per lawscookie: {
   store: new SessionStore ({ // this is what keeps user logged in for duration set in clearinterval. Otherwise the user would get logged out between pages
-    knex: require('../database/dbConfig'),
+    knex: require('./database/dbConfig'),
     tablename: 'sessions',
     createtable: true,
     clearInterval: 60*60 *1000, // defaults to 60000, clears our expired sessions in millisecondsrs
