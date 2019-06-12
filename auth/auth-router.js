@@ -48,7 +48,7 @@ function generateToken(user) {
     username: user.username
   };
 
-  // const secret = secrets; // moved to env and secrets.js to isolat secrets
+  // const secret = secrets; // moved to env and secrets.js to isolate secrets
   const options = {
     expiresIn: '1h'
   };
