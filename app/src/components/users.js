@@ -1,37 +1,39 @@
-import React, { Component } from 'react';
+import React from 'react';
+import axios from 'axios';
+import requiresAuth from './requiresAuth.js'
 
-import User from './user';
-import Register from './Register.js'
+class Users extends React.Component {
+    state = {
+        users:[]
+    }
 
-class Users extends Component {
+    componentDidMount() {
+        const endpoint = '/users'; // the full URL doesnt need to be here because its in the axios defaults basurl 
+      
+        axios
+            .get(endpoint) // no more requestConfig, it autimatically comes with axios interceptor in requiresAuth
+            .then(res => {
+                this.setState({ users: res.data.users })
+            })
+            .catch(err => console.error(err))
+    }
 
-  render() {
-    return (
-      <div className="Users">
-        <h1>Users</h1>
-        <h3><Register/> Add A User</h3>
-        <ul>
-          {this.props.users.map(user => {
-            return (
-              <User
-              user={user.username}
-                id={user.id}
-                key={user.id}
-                password={user.password}
-                department={user.department}
-                deleteUser={this.props.deleteUser}
-                updateUser={this.props.updateUser}
-              />
-            );
-          })}
-        </ul>
-      </div>
-    );
-  }
+    render() {
+        return (
+            <>
+                <h2>User List</h2>
+                <ul>
+                    {this.state.users.map(u => (
+                        <li key={u.id}>{u.username}</li>,
+                        <li key={u.id}>{u.department}</li>
+                    ))}
+                </ul>
+
+            </>
+        )
+    }
+
 }
 
-User.defaultProps = {
- users: [],
-};
+export default requiresAuth(Users); // this function is what is actually being rendered from this component
 
-export default Users;

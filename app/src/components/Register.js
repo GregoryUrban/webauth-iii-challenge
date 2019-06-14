@@ -1,67 +1,62 @@
-import React, { Component } from 'react';
+import React from 'react'
+import { withRouter } from 'react-router-dom'
 import axios from 'axios';
 
-class Register extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: '',
-      password: '',
-      department: ''
-    };
-  }
 
-  addUser = event => {
-    const [name, password, department] = [this.state.name, this.state.password, this.state.department];
-    event.preventDefault();
-    // add code to create the User using the api
-    axios
-    .post('http://localhost:5000/api/register', { name, password, department })
-    .then(res => {
-      this.props.getUsers();
-      this.props.history.push('/');
-    })
-    .catch(err => console.log(err, {message: err}));
+class Register extends React.Component {
+	state = {
+		// fullname: '',
+		username: '',
+    password: '',
+    department: ''
+	}
 
-    this.setState({
-      name: '',
-      password: '', 
-      department
-    });
-  }
+	handleSubmit = async (event) => {
+		event.preventDefault()
 
-  handleInputChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
-  };
+		try {
+			const {
+				// fullname,
+				username,
+        password,
+        department
+			} = this.state
+			
+            const result = await axios.post('/auth/register', {
+				// fullname,
+				username,
+        password,
+        department
+			})
 
-  render() {
-    return (
-      <div className="Register">
-        <form onSubmit={this.addUser}>
-          <input
-            onChange={this.handleInputChange}
-            placeholder="name"
-            value={this.state.name}
-            name="name"
-          />
-            <input
-            onChange={this.handleInputChange}
-            placeholder="password"
-            value={this.state.password}
-            name="password"
-          />
-          <input
-            onChange={this.handleInputChange}
-            placeholder="department"
-            value={this.state.department}
-            name="department"
-          />
-         
-          <button type="submit">Add to the User List</button>
-        </form>
-      </div>
-    );
-  }
+			localStorage.setItem('token', result.data.token)
+			this.props.history.push('/login')
+		} catch (err) {
+			console.error(err)
+		}
+	}
+
+	handleChange = (event) => {
+		this.setState({
+			[event.target.name]: event.target.value,
+		})
+	}
+
+	render() {
+		return (
+			<>
+				<h3>Signup</h3>
+
+				<form onSubmit={this.handleSubmit}>
+					<input type="text" name="username" placeholder="Username" onChange={this.handleChange} value={this.state.username} />
+					<input type="password" name="password" placeholder="Password" onChange={this.handleChange} value={this.state.password} />
+					<input type="text" name="department" placeholder="Department" onChange={this.handleChange} value={this.state.department} />
+					<button type="submit">Sign Up</button>
+				</form>
+			</>
+		)
+	}
 }
 
-export default Register;
+export default withRouter(Register)
+

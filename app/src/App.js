@@ -1,75 +1,35 @@
 import React from 'react';
-import axios from 'axios';
-import { Route, NavLink } from 'react-router-dom';
+import {Route, NavLink, withRouter} from 'react-router-dom';
 
 import './App.css';
-import Users from './components/users.js';
-// import ErrorBoundary from './components/errorBoundary.js'
-import Register from './components/Register.js'
 import Login from './components/Login.js';
+import Register from './components/Register.js'
+import Users from './components/users.js';
 
-
-class App extends React.Component {
-constructor() {
-  super()
-  this.state = {
-    users: []
+function App(props) {
+  function logout() {
+    localStorage.removeItem('jwt');
+    props.history.push('/login')
   }
-}
-
-
-componentDidMount(){
-  this.getUsers();
-}
-getUsers = () => {
-    axios
-    .get('http://localhost:5000/api/users')
-    .then(res => this.setState({ users: res.data }))
-    .catch(err => console.log(err,{message: err}));
-}
-deleteUser = id => {
-  axios.delete(`http://localhost:5000/api/users/${id}`)
-    .then(res => this.setState({ users: res.data }))
-    .catch(err => console.log(err));
-}
-updateUser = (id, info) => {
-  axios.put(`http://localhost:5000/api/users/${id}`, info)
-    .then(res => this.setState({ users: res.data }))
-    .catch(err => console.log(err));
-}
-render() {
   return (
-    <div className="App">
-    
+    <>
+      <header>
+       <NavLink to='/login'>Login</NavLink>
+       <NavLink to='/users'>Users</NavLink>
+       <NavLink to='/register'>Sign Up!</NavLink>
 
-         <li>
-            <NavLink exact to="/login" >
-              Login
-            </NavLink>
-          </li>
+        <button type='button' onClick={logout}>Logout</button>
+      </header>
 
-      <Route 
-        exact path="/"
-        render={props => 
-            <Users 
-              {...props} 
-              users={this.state.users} 
-              deleteUser={this.deleteUser} 
-              updateUser={this.updateUser}
-              />
-        }
-        />
-  <Route path="/register"
-    render={props => 
-    <Register {...props} getUsers={this.getUsers} />
-    }
-    />
-  
-  <Route exact path='/login' component={Login}/>
+      <main>
+        <Route path='/login' component={Login}></Route>
+        <Route path='/users' component={Users}></Route>
+        <Route path='/register' component={Register}></Route>
 
-    </div>
+        </main>
+    </>
   );
-}
+  
 }
 
-export default App;
+export default withRouter(App); // withrouter will save the history prop

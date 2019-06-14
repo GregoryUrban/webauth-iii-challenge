@@ -1,68 +1,48 @@
-import React, {Component} from 'react'
-import axios from 'axios'
+import React from 'react';
+import axios from 'axios';
 
-class LogIn extends Component {
+class Login extends React.Component {
     state = {
-        credentials: {
-            username: '',
-            password: ''
-        }
+        username: 'margo',
+        password: 'pass'
+    };
+    render() {
+        return (
+            <div>
+            <h2>Login</h2>
+            <form onSubmit={this.submitForm}>
+                <div>
+                    <label htmlFor="username"></label><input id='username' onChange={this.handleChange} value={this.state.username} type="text"/>
+                </div>
+                <div>
+                    <label htmlFor="password"></label><input id='password' onChange={this.handleChange} value={this.state.password} type="pasword"/>
+                </div>
+                <div><button type='submit'>Login</button></div>
+            </form>        
+            </div>
+        )
     }
 
     handleChange = event => {
-        this.setState({
-            credentials: {
-                ...this.state.credentials,
-                [event.target.name] : event.target.value
-            }
-        })
-    }
+        const { id, value } = event.target;
+        this.setState({ [id]: value})
+    };
 
-    login = event => {
-        event.preventDefault()
+    submitForm = event => {
+        event.preventDefault();
+        const endpoint = 'http://localhost:5000/api/auth/login';
 
         axios
-            .post( 'http://localhost:5000/api/auth/login', this.state.credentials)
-            .then( res => {
-                // this.props.getUsers();
-                localStorage.setItem('session', res.data.session)
-                this.props.history.push('/')
+            .post(endpoint, this.state)
+            .then(res => {
+                localStorage.setItem('jwt', res.data.token)
+                this.props.history.push('/users')
             })
-            
-            .catch( err => {
-                console.log(err, {message: 'Cant login!'})
+            .catch(err => {
+                console.error('Login Error', err)
             })
-    }
-
-
-    render() {
-        return (
-            <>
-                <h1>Log In</h1>
-
-                <form onSubmit={this.login}>
-                    <input
-                        type='string'
-                        name='username'
-                        placeholder='Username'
-                        value={this.state.credentials.username}
-                        onChange={this.handleChange}
-                    />
-                
-                    <input 
-                        type='password'
-                        name='password'
-                        placeholder='Password'
-                        value={this.state.credentials.password}
-                        onChange={this.handleChange}
-                    /> 
-                 
-                    <button> Log In </button>
-                </form>
-            </>
-        )
     }
     
 }
 
-export default LogIn
+export default Login;
